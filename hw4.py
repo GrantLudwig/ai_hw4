@@ -123,28 +123,47 @@ def goodValue(domains, space, value):
                     return False
     return True
 
+#retuns tuple of the space that is most constrained
+def mrv(domains):
+    minDomain = ((-1,-1), 10)
+    for key in domains:
+        domainSize = len(domains[key])
+        if domainSize < minDomain[1] and domainSize > 1:
+            minDomain = (key, domainSize)
+        if domainSize < 1:
+            return (-2,-2)
+    return minDomain[0]
+
 def backTrack(domains, space, first):
     row, col = space
-    if col >= boardSize:
-        row = row + 1
-        col = 0
-    if row >= boardSize:
+    if row == -1:
         return True, domains
+    if row == -2:
+        return False, []
     if first:
         first = False
         maxDomain = ((0,0), 0)
         for key in domains:
             domainSize = len(domains[key])
             if domainSize > maxDomain[1]:
-                maxDomain = (key, len(domains[key]))
-        print(maxDomain)
+                maxDomain = (key, domainSize)
+        oldDict = copy.deepcopy(domains)
+        for value in domains[(row, col)]:
+            if goodValue(domains, (row,col), value):
+                domains[(row, col)] = [value]
+                found, solution = backTrack(domains, mrv(domains), first)
+                if found:
+                    return found, solution
+                else:
+                    domains = copy.deepcopy(oldDict)
+            else:
+                domains = copy.deepcopy(oldDict)
 
-    #choose first in list
     oldDict = copy.deepcopy(domains)
     for value in domains[(row, col)]:
         if goodValue(domains, (row,col), value):
             domains[(row, col)] = [value]
-            found, solution = backTrack(domains, (row,col+1), first)
+            found, solution = backTrack(domains, mrv(domains), first)
             if found:
                 return found, solution
             else:
