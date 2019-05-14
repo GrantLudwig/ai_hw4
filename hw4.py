@@ -123,26 +123,35 @@ def goodValue(domains, space, value):
                     return False
     return True
 
-def backTrack(domains, space):
+def backTrack(domains, space, first):
     row, col = space
     if col >= boardSize:
         row = row + 1
         col = 0
     if row >= boardSize:
         return True, domains
+    if first:
+        first = False
+        maxDomain = ((0,0), 0)
+        for key in domains:
+            domainSize = len(domains[key])
+            if domainSize > maxDomain[1]:
+                maxDomain = (key, len(domains[key]))
+        print(maxDomain)
+
     #choose first in list
     oldDict = copy.deepcopy(domains)
     for value in domains[(row, col)]:
         if goodValue(domains, (row,col), value):
             domains[(row, col)] = [value]
-            found, solution = backTrack(domains, (row,col+1))
+            found, solution = backTrack(domains, (row,col+1), first)
             if found:
                 return found, solution
             else:
                 domains = copy.deepcopy(oldDict)
         else:
             domains = copy.deepcopy(oldDict)
-    return False, []
+    return False, None
 
 #driver code
 fileName = sys.argv[1]
@@ -154,7 +163,7 @@ printBoard(board)
 print('\n')
 domains = buildDomains(board)
 pruneDomain(domains, board)
-found, solution = backTrack(domains, (0,0))
+found, solution = backTrack(domains, (0,0), True)
 if found:
     print('There is a solution')
     print('-------------------', '\n')
