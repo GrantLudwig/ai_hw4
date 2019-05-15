@@ -134,6 +134,20 @@ def mrv(domains):
             return (-2,-2)
     return minDomain[0]
 
+def backTrackLoop(domains, row, col, first):
+    oldDict = copy.deepcopy(domains)
+    for value in domains[(row, col)]:
+        if goodValue(domains, (row,col), value):
+            domains[(row, col)] = [value]
+            found, solution = backTrack(domains, mrv(domains), first)
+            if found:
+                return found, solution
+            else:
+                domains = copy.deepcopy(oldDict)
+        else:
+            domains = copy.deepcopy(oldDict)
+    return False, None
+
 def backTrack(domains, space, first):
     row, col = space
     if row == -1:
@@ -147,30 +161,32 @@ def backTrack(domains, space, first):
             domainSize = len(domains[key])
             if domainSize > maxDomain[1]:
                 maxDomain = (key, domainSize)
-        oldDict = copy.deepcopy(domains)
-        for value in domains[(row, col)]:
-            if goodValue(domains, (row,col), value):
-                domains[(row, col)] = [value]
-                found, solution = backTrack(domains, mrv(domains), first)
-                if found:
-                    return found, solution
-                else:
-                    domains = copy.deepcopy(oldDict)
-            else:
-                domains = copy.deepcopy(oldDict)
+        return backTrackLoop(domains, row, col, first)
+        #oldDict = copy.deepcopy(domains)
+        #for value in domains[(row, col)]:
+        #    if goodValue(domains, (row,col), value):
+        #        domains[(row, col)] = [value]
+        #        found, solution = backTrack(domains, mrv(domains), first)
+        #        if found:
+        #            return found, solution
+        #        else:
+        #            domains = copy.deepcopy(oldDict)
+        #    else:
+        #        domains = copy.deepcopy(oldDict)
 
-    oldDict = copy.deepcopy(domains)
-    for value in domains[(row, col)]:
-        if goodValue(domains, (row,col), value):
-            domains[(row, col)] = [value]
-            found, solution = backTrack(domains, mrv(domains), first)
-            if found:
-                return found, solution
-            else:
-                domains = copy.deepcopy(oldDict)
-        else:
-            domains = copy.deepcopy(oldDict)
-    return False, None
+    return backTrackLoop(domains, row, col, first)
+    #oldDict = copy.deepcopy(domains)
+    #for value in domains[(row, col)]:
+    #    if goodValue(domains, (row,col), value):
+    #        domains[(row, col)] = [value]
+    #        found, solution = backTrack(domains, mrv(domains), first)
+    #        if found:
+    #            return found, solution
+    #        else:
+    #            domains = copy.deepcopy(oldDict)
+    #    else:
+    #        domains = copy.deepcopy(oldDict)
+    #return False, None
 
 #driver code
 fileName = sys.argv[1]
