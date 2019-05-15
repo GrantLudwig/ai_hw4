@@ -188,8 +188,19 @@ def backTrack(domains, space, first):
     #        domains = copy.deepcopy(oldDict)
     #return False, None
 
+def outputSolutionFile(solution, fileName):
+    outfile = open(fileName, 'w')
+    for row in solution:
+        output = ''
+        for num in row:
+            output += str(num) + ' '
+        output += '\n'
+        outfile.write(output)
+    outfile.close()
+
 #driver code
 fileName = sys.argv[1]
+outputFileName = sys.argv[2]
 board = readFile(fileName)
 print('\n')
 print('Initial Board')
@@ -209,5 +220,6 @@ if found:
             rowList.append(str(solution[rowI, colI][0]))
         completeBoard.append(rowList)
     printBoard(completeBoard)
+    outputSolutionFile(completeBoard, outputFileName)
 else:
     print('There is no solution')
