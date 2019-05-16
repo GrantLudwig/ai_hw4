@@ -50,17 +50,17 @@ def pruneDomain(domains, board):
     for key in domains:
         domainList = domains[key]
         if len(domainList) != 1:
-            #row
+            #checks row
             for colI in range(boardSize):
                 if int(board[key[0]][colI]) in domainList:
                     domainList.remove(int(board[key[0]][colI]))
-            #col
+            #checks col
             for rowI in range(boardSize):
                 if int(board[rowI][key[1]]) in domainList:
                     domainList.remove(int(board[rowI][key[1]]))
             #square
             rowM = 8 - key[0]
-            colM =8 - key[1]
+            colM = 8 - key[1]
             rowRange = None
             colRange = None
                 #find row range
@@ -82,14 +82,17 @@ def pruneDomain(domains, board):
                     if int(board[rowI][colI]) in domainList:
                         domainList.remove(int(board[rowI][colI]))
 
+#domain pruning for backtracking
 def goodValue(domains, space, value):
     row, col = space
+    #checks col
     for rowI in range(boardSize):
         if row != rowI and value in domains[(rowI, col)]:
             if len(domains[(rowI, col)]) > 1:
                 domains[(rowI, col)].remove(value)
             else:
                 return False
+    #checks row
     for colI in range(boardSize):
         if col != colI and value in domains[(row, colI)]:
             if len(domains[(row, colI)]) > 1:
@@ -134,6 +137,7 @@ def mrv(domains):
             return (-2,-2)
     return minDomain[0]
 
+#helper function for backTrack
 def backTrackLoop(domains, row, col, first):
     oldDict = copy.deepcopy(domains)
     for value in domains[(row, col)]:
@@ -162,32 +166,9 @@ def backTrack(domains, space, first):
             if domainSize > maxDomain[1]:
                 maxDomain = (key, domainSize)
         return backTrackLoop(domains, row, col, first)
-        #oldDict = copy.deepcopy(domains)
-        #for value in domains[(row, col)]:
-        #    if goodValue(domains, (row,col), value):
-        #        domains[(row, col)] = [value]
-        #        found, solution = backTrack(domains, mrv(domains), first)
-        #        if found:
-        #            return found, solution
-        #        else:
-        #            domains = copy.deepcopy(oldDict)
-        #    else:
-        #        domains = copy.deepcopy(oldDict)
-
     return backTrackLoop(domains, row, col, first)
-    #oldDict = copy.deepcopy(domains)
-    #for value in domains[(row, col)]:
-    #    if goodValue(domains, (row,col), value):
-    #        domains[(row, col)] = [value]
-    #        found, solution = backTrack(domains, mrv(domains), first)
-    #        if found:
-    #            return found, solution
-    #        else:
-    #            domains = copy.deepcopy(oldDict)
-    #    else:
-    #        domains = copy.deepcopy(oldDict)
-    #return False, None
 
+#outputs the solution to a file
 def outputSolutionFile(solution, fileName):
     outfile = open(fileName, 'w')
     for row in solution:
